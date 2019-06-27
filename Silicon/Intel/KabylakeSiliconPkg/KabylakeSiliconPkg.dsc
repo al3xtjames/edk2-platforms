@@ -166,9 +166,6 @@ gSiPkgTokenSpaceGuid.PcdSiPciExpressBaseAddress|gEfiMdePkgTokenSpaceGuid.PcdPciE
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   ExtractGuidedSectionLib|MdePkg/Library/DxeExtractGuidedSectionLib/DxeExtractGuidedSectionLib.inf
 
-  Tpm2CommandLib|$(PLATFORM_SI_PACKAGE)/SampleCode/SecurityPkg/Library/Tpm2CommandLib/Tpm2CommandLib.inf
-  Tpm2DeviceLib|$(PLATFORM_SI_PACKAGE)/SampleCode/SecurityPkg/Library/Tpm2DeviceLibTrEE/Tpm2DeviceLibTrEE.inf
-
 ###################################################################################################
 #
 # Silicon Init Dxe Library
