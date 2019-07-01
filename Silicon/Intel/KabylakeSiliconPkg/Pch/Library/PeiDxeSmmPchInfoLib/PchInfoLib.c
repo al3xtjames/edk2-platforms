@@ -13,8 +13,8 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/IoLib.h>
 #include <Library/DebugLib.h>
 #include <Library/BaseLib.h>
-#include <Library/MmPciLib.h>
 #include <Library/PchInfoLib.h>
+#include <Library/PciCf8Lib.h>
 #include <PchAccess.h>
 
 #define PCH_DO_STRINGIFY(x) #x
@@ -43,7 +43,6 @@ PchStepping (
 {
   UINT8         RevId;
   UINT16        LpcDeviceId;
-  UINTN         LpcBaseAddress;
 #ifndef MDEPKG_NDEBUG
   static CHAR8  *UnsupportedPchMsg = "Unsupported PCH. Supported stepping starting from";
 #endif
@@ -52,14 +51,23 @@ PchStepping (
     return mPchStepping;
   }
 
-  LpcBaseAddress = MmPciBase (
-                     DEFAULT_PCI_BUS_NUMBER_PCH,
-                     PCI_DEVICE_NUMBER_PCH_LPC,
-                     PCI_FUNCTION_NUMBER_PCH_LPC
-                     );
-  RevId = MmioRead8 (LpcBaseAddress + PCI_REVISION_ID_OFFSET);
+  RevId = PciCf8Read8 (
+            PCI_CF8_LIB_ADDRESS (
+              DEFAULT_PCI_BUS_NUMBER_PCH,
+              PCI_DEVICE_NUMBER_PCH_LPC,
+              PCI_FUNCTION_NUMBER_PCH_LPC,
+              PCI_REVISION_ID_OFFSET
+              )
+            );
 
-  LpcDeviceId = MmioRead16 (LpcBaseAddress + PCI_DEVICE_ID_OFFSET);
+  LpcDeviceId = PciCf8Read16 (
+                  PCI_CF8_LIB_ADDRESS (
+                    DEFAULT_PCI_BUS_NUMBER_PCH,
+                    PCI_DEVICE_NUMBER_PCH_LPC,
+                    PCI_FUNCTION_NUMBER_PCH_LPC,
+                    PCI_DEVICE_ID_OFFSET
+                  )
+                );
 
   if (IS_SKL_PCH_H_LPC_DEVICE_ID (LpcDeviceId)) {
     switch (RevId) {
@@ -136,20 +144,28 @@ IsPchSupported (
 {
   UINT16  LpcDeviceId;
   UINT16  LpcVendorId;
-  UINTN   LpcBaseAddress;
 
   if (mIsPchSupported != 0xFF) {
     return (BOOLEAN) mIsPchSupported;
   }
 
-  LpcBaseAddress = MmPciBase (
-                     DEFAULT_PCI_BUS_NUMBER_PCH,
-                     PCI_DEVICE_NUMBER_PCH_LPC,
-                     PCI_FUNCTION_NUMBER_PCH_LPC
-                     );
+  LpcDeviceId = PciCf8Read16 (
+                  PCI_CF8_LIB_ADDRESS (
+                    DEFAULT_PCI_BUS_NUMBER_PCH,
+                    PCI_DEVICE_NUMBER_PCH_LPC,
+                    PCI_FUNCTION_NUMBER_PCH_LPC,
+                    PCI_DEVICE_ID_OFFSET
+                  )
+                );
 
-  LpcDeviceId = MmioRead16 (LpcBaseAddress + PCI_DEVICE_ID_OFFSET);
-  LpcVendorId = MmioRead16 (LpcBaseAddress + PCI_VENDOR_ID_OFFSET);
+  LpcVendorId = PciCf8Read16 (
+                  PCI_CF8_LIB_ADDRESS (
+                    DEFAULT_PCI_BUS_NUMBER_PCH,
+                    PCI_DEVICE_NUMBER_PCH_LPC,
+                    PCI_FUNCTION_NUMBER_PCH_LPC,
+                    PCI_VENDOR_ID_OFFSET
+                  )
+                );
 
   ///
   /// Verify that this is a supported chipset
@@ -406,15 +422,15 @@ GetLpcDid (
   )
 {
   UINT16  LpcDeviceId;
-  UINTN   LpcBaseAddress;
 
-  LpcBaseAddress = MmPciBase (
-                     DEFAULT_PCI_BUS_NUMBER_PCH,
-                     PCI_DEVICE_NUMBER_PCH_LPC,
-                     PCI_FUNCTION_NUMBER_PCH_LPC
-                     );
-
-  LpcDeviceId = MmioRead16 (LpcBaseAddress + PCI_DEVICE_ID_OFFSET);
+  LpcDeviceId = PciCf8Read16 (
+                  PCI_CF8_LIB_ADDRESS (
+                      DEFAULT_PCI_BUS_NUMBER_PCH,
+                      PCI_DEVICE_NUMBER_PCH_LPC,
+                      PCI_FUNCTION_NUMBER_PCH_LPC,
+                      PCI_DEVICE_ID_OFFSET
+                    )
+                  );
 
   return LpcDeviceId;
 }

@@ -24,7 +24,7 @@ LIBRARY_CLASS = PchInfoLib
 BaseLib
 IoLib
 DebugLib
-MmPciLib
+PciCf8Lib
 
 
 [Packages]
